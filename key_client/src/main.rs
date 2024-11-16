@@ -1,12 +1,9 @@
-use futures_util::{SinkExt, StreamExt}; // Required for handling async streams and sinks
-use inputbot;
-use inputbot::KeybdKey;
+use futures_util::{SinkExt, StreamExt};
+use inputbot::{handle_input_events, KeybdKey};
 use serde::{Deserialize, Serialize};
-use std::{
-    sync::{Arc, Mutex},
-    thread, time,
-};
+use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
+use tokio::time::{self, Duration};
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -16,14 +13,13 @@ enum Signal {
     ShiftReleased,
 }
 
-#[tokio::main] // The main function should be asynchronous
+#[tokio::main]
 async fn main() {
-    let addr = "ws://localhost:8000/ws"; // WebSocket server address
+    let addr = "ws://localhost:8000/ws";
 
     // Create a channel for sending messages to the WebSocket task
-    let (tx, mut rx) = mpsc::channel::<Signal>(100); // Message buffer with capacity of 100
+    let (tx, mut rx) = mpsc::channel::<Signal>(500);
 
-    // Try to connect to the WebSocket server
     let ws_stream = match connect_async(addr).await {
         Ok((ws_stream, _)) => {
             println!("Successfully connected to {}", addr);
@@ -40,7 +36,6 @@ async fn main() {
     // Spawn a separate asynchronous task to handle the WebSocket communication
     tokio::spawn(async move {
         while let Some(signal) = rx.recv().await {
-            // Serialize the signal and send it to the WebSocket server
             let signal_str = serde_json::to_string(&signal).unwrap();
             if let Err(e) = write.send(Message::Text(signal_str)).await {
                 println!("Failed to send message: {}", e);
@@ -98,11 +93,11 @@ async fn main() {
         }
     });
 
-    // Start the input event handler (it will monitor and capture keypress events)
-    thread::spawn(|| inputbot::handle_input_events(true));
+    tokio::task::spawn_blocking(|| {
+        handle_input_events(true);
+    });
 
-    // Keep the program running to handle key events
     loop {
-        thread::sleep(time::Duration::from_millis(200));
+        time::sleep(Duration::from_millis(200)).await;
     }
 }

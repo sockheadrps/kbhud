@@ -142,6 +142,11 @@ socket.onmessage = function (event) {
   // Parse the incoming WebSocket message
   const data = JSON.parse(event.data);
 
+  if (data.event === "KeyPress") {
+    const key = data.key.replace('Key', ''); // Removes 'Key' from key name (e.g., 'AKey' becomes 'A')
+    highlightKey(key); // Highlight the pressed key
+  }
+
   // Check for F24Key to toggle Layer 2
   if (data.event === "KeyPress" && data.key === "F24Key") {
     toggleLayer2(); // Toggle Layer 2 (MO1)
@@ -165,3 +170,37 @@ socket.onerror = function (error) {
 socket.onclose = function () {
   console.log('WebSocket connection closed.');
 };
+
+// Handle toggling Layer 1
+document.getElementById('toggle-layer-1').addEventListener('click', () => {
+  toggleLayer1()
+});
+
+// Handle toggling Layer 2
+document.getElementById('toggle-layer-2').addEventListener('click', () => {
+  toggleLayer2(); // Toggle Layer 2 (MO1)
+
+});
+
+// Handle toggling Shift layer
+document.getElementById('toggle-shift').addEventListener('click', () => {
+  toggleShift();
+});
+
+function highlightKey(key) {
+  // Select all elements with the class 'key'
+  const keyElements = document.querySelectorAll('.key');
+
+  // Loop through the key elements and find the one that matches the key string
+  keyElements.forEach((keyElement) => {
+    if (keyElement.innerText === key) {
+      // Add the highlight class to the key element
+      keyElement.classList.add('highlight-temporary');
+      
+      // Remove the highlight after the animation (500ms)
+      setTimeout(() => {
+        keyElement.classList.remove('highlight-temporary');
+      }, 500);
+    }
+  });
+}

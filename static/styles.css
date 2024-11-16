@@ -39,37 +39,53 @@ body {
   border-radius: 5px;
   padding: 10px 15px;
   text-align: center;
-  width: 60px;  /* Fixed width for uniformity */
-  height: 60px; /* Fixed height for uniformity */
+  width: 60px;  
+  height: 60px; 
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   user-select: none;
   transition: transform 0.1s ease, background-color 0.1s ease;
 }
 
-.key:active {
+.key.highlight {
   transform: scale(0.95);
   background-color: #e0e0e0;
+  transition: background-color 0.3s ease-in-out;
 }
 
-.controls {
+.key.highlight-temporary {
+  animation: highlight 0.3s ease-in-out;
+}
+
+@keyframes highlight {
+  100% { background-color: transparent; }
+  50% { background-color: #636262; }
+  0% { background-color: transparent; }
+}
+
+
+.layer-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 1rem;
+  gap: 10px;
 }
 
 button {
-  padding: 10px 15px;
-  background-color: #007BFF;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-/* Right align the bottom row of the left keyboard */
-#left-side .row:last-child {
-  justify-content: flex-end;
+button:active {
+  background-color: #00408b;
 }
