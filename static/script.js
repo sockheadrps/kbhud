@@ -109,7 +109,6 @@ function toggleLayer1() {
   updateKeyboardLayout(currentLayer);
 }
 
-
 function toggleLayer2() {
   if (currentLayer === 3) {
     currentLayer = 0; // Go back to Layer 0 (default)
@@ -130,7 +129,7 @@ function toggleShift() {
 }
 
 // WebSocket connection
-const socket = new WebSocket('ws://localhost:8000/ws');
+const socket = new WebSocket('ws://localhost:8080/ws');
 
 socket.onopen = function () {
   console.log('WebSocket connection established.');
@@ -142,23 +141,95 @@ socket.onmessage = function (event) {
   // Parse the incoming WebSocket message
   const data = JSON.parse(event.data);
 
-  if (data.event === "KeyPress") {
-    const key = data.key.replace('Key', ''); // Removes 'Key' from key name (e.g., 'AKey' becomes 'A')
+  if (data.event === 'KeyPress') {
+    let key = data.key.replace('Key', ''); // Removes 'Key' from key name (e.g., 'AKey' becomes 'A')
+    switch (key) {
+      case 'Up':
+        key = '↑';
+        break;
+      case 'Left':
+        key = '←';
+        break;
+      case 'Down':
+        key = '↓';
+        break;
+      case 'Right':
+        key = '→';
+        break;
+      case 'Space':
+        key = 'SPACE';
+        break;
+      case 'Enter':
+        key = "RET";
+        break;
+      case 'Backspace':
+        key = "BSPC";
+        break;
+      case 'LControl':
+        key = "CTRL";
+        break;
+      case 'LShift':
+        key = "SHFT";
+        break
+      case 'LAlt':
+        key = "ALT";
+        break;
+      case 'Tab':
+        key = "TAB";
+        break;
+      case 'Escape':
+        key = "ESC";
+        break;
+      case 'LSuper':
+        key = "GUI";
+        break;
+      case 'Backquote':
+        console.log(data.shift);
+        if (data.shift) {
+          key = "~";
+        }
+        else {
+          key = "`";
+        }
+        break;
+      case 'Quote':
+        key = "'";
+        break;
+      case 'Numrow9':
+        if (data.shift) {
+          key = "(";
+        }
+        else {
+          key = "9";
+        }
+      case 'Numrow0':
+        if (data.shift) {
+          key = ")";
+        }
+        else {
+          key = "0";
+        }
+        break;
+      break;
+      default:
+        break;
+    }
+      
     highlightKey(key); // Highlight the pressed key
   }
 
   // Check for F24Key to toggle Layer 2
-  if (data.event === "KeyPress" && data.key === "F24Key") {
+  if (data.event === 'KeyPress' && data.key === 'F24Key') {
     toggleLayer2(); // Toggle Layer 2 (MO1)
   }
-  if (data.event === "KeyPress" && data.key === "F23Key") {
+  if (data.event === 'KeyPress' && data.key === 'F23Key') {
     toggleLayer1(); // Toggle Layer 2 (MO1)
   }
   // Check for LShiftKey to toggle Shift (Layer 1)
-  if (data.event === "KeyPress" && data.key === "ShiftPressed") {
+  if (data.event === 'ShiftPressed') {
     toggleShift(); // Toggle Shift (Layer 1)
   }
-  if (data.event === "ShiftReleased") {
+  if (data.event === 'ShiftReleased') {
     toggleShift(); // Toggle Shift (Layer 1)
   }
 };
@@ -172,20 +243,25 @@ socket.onclose = function () {
 };
 
 // Handle toggling Layer 1
-document.getElementById('toggle-layer-1').addEventListener('click', () => {
-  toggleLayer1()
-});
+document
+  .getElementById('toggle-layer-1')
+  .addEventListener('click', () => {
+    toggleLayer1();
+  });
 
 // Handle toggling Layer 2
-document.getElementById('toggle-layer-2').addEventListener('click', () => {
-  toggleLayer2(); // Toggle Layer 2 (MO1)
-
-});
+document
+  .getElementById('toggle-layer-2')
+  .addEventListener('click', () => {
+    toggleLayer2(); // Toggle Layer 2 (MO1)
+  });
 
 // Handle toggling Shift layer
-document.getElementById('toggle-shift').addEventListener('click', () => {
-  toggleShift();
-});
+document
+  .getElementById('toggle-shift')
+  .addEventListener('click', () => {
+    toggleShift();
+  });
 
 function highlightKey(key) {
   // Select all elements with the class 'key'
@@ -196,7 +272,7 @@ function highlightKey(key) {
     if (keyElement.innerText === key) {
       // Add the highlight class to the key element
       keyElement.classList.add('highlight-temporary');
-      
+
       // Remove the highlight after the animation (500ms)
       setTimeout(() => {
         keyElement.classList.remove('highlight-temporary');

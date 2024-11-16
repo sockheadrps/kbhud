@@ -16,6 +16,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Create a list to keep track of connected WebSocket clients
 active_connections = []
 
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -38,6 +39,8 @@ async def websocket_endpoint(websocket: WebSocket):
         print("WebSocket connection closed.")
 
 # Serve the main HTML page using TemplateResponse
+
+
 @app.get("/", response_class=HTMLResponse)
 async def get_html(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -45,4 +48,4 @@ async def get_html(request: Request):
 # Run the FastAPI server
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=8080)
