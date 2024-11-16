@@ -48,7 +48,7 @@ body {
 
 .key.highlight {
   transform: scale(0.95);
-  background-color: #e0e0e0;
+  background-color: #007bff;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -58,7 +58,7 @@ body {
 
 @keyframes highlight {
   100% { background-color: transparent; }
-  50% { background-color: #636262; }
+  50% { background-color: #1e3e61; }
   0% { background-color: transparent; }
 }
 
@@ -88,4 +88,9 @@ button:hover {
 
 button:active {
   background-color: #00408b;
+}
+
+/* Right align the bottom row of the left keyboard */
+#left-side .row:last-child {
+  justify-content: flex-end;
 }

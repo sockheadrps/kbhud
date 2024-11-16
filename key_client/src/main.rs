@@ -36,6 +36,7 @@ async fn main() {
     // Spawn a separate asynchronous task to handle the WebSocket communication
     tokio::spawn(async move {
         while let Some(signal) = rx.recv().await {
+            println!("signal loop");
             let signal_str = serde_json::to_string(&signal).unwrap();
             if let Err(e) = write.send(Message::Text(signal_str)).await {
                 println!("Failed to send message: {}", e);
@@ -99,5 +100,6 @@ async fn main() {
 
     loop {
         time::sleep(Duration::from_millis(200)).await;
+        println!("end loop")
     }
 }
