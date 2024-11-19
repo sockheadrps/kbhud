@@ -133,6 +133,14 @@ const socket = new WebSocket('ws://localhost:8080/ws');
 
 socket.onopen = function () {
   console.log('WebSocket connection established.');
+
+  const message = {
+    event: 'connect', 
+    source: 'frontend',  
+  };
+
+  // Send the message to the server
+  socket.send(JSON.stringify(message));
 };
 
 socket.onmessage = function (event) {

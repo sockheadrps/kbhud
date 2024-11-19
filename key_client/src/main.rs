@@ -34,11 +34,11 @@ async fn main() {
     // Handle input events
     tokio::spawn({
         let tx = tx.clone();
-        let active = Arc::new(Mutex::new(false)); // Shared state with Arc
+        let active = Arc::new(Mutex::new(false));
 
         async move {
             KeybdKey::bind_all(move |event| {
-                let active = Arc::clone(&active); // Clone the Arc to share ownership within the closure
+                let active = Arc::clone(&active);
                 let mut shift_pressed =
                     KeybdKey::LShiftKey.is_pressed() || KeybdKey::RShiftKey.is_pressed();
 
@@ -52,8 +52,7 @@ async fn main() {
                 // Check for shift key state changes
                 if shift_pressed {
                     if !*active_lock {
-                        *active_lock = !*active_lock; // Toggle the active state
-                                                      // Send ShiftPressed event immediately when Shift is pressed
+                        *active_lock = !*active_lock;
                         let signal = Signal::ShiftPressed;
                         if let Err(e) = tx.try_send(signal) {
                             eprintln!("Failed to send ShiftPressed signal: {}", e);
@@ -63,8 +62,7 @@ async fn main() {
                     }
                 } else {
                     if *active_lock {
-                        *active_lock = !*active_lock; // Toggle the active state
-                                                      // Send ShiftReleased event when Shift is released
+                        *active_lock = !*active_lock; 
                         let signal = Signal::ShiftReleased;
                         if let Err(e) = tx.try_send(signal) {
                             eprintln!("Failed to send ShiftReleased signal: {}", e);
